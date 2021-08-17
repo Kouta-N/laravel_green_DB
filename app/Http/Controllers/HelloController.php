@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Pagination\MyPaginator;
 use App\MyClasses\MyService;
 use App\Person;
 use Illuminate\Http\Request;
@@ -12,6 +13,148 @@ use Illuminate\Support\Facades\DB;
 
 class HelloController extends Controller
 {
+    public function index(Request $request)
+    {
+        $msg = 'show people record.';
+        $re = Person::get();
+        $fields = Person::get()->fields();
+        $data = [
+            'msg' => implode(',',$fields),
+            'data' => $re,
+        ];
+        return view('hello.index', $data);
+    }
+
+    public function save($id,$name)
+    {
+        $record = Person::find($id);
+        $record->name = $name;
+        $record->save();
+        return redirect()->route('hello');
+    }
+
+    public function other()
+    {
+        $person = new Person();
+        $person->all_data = ['aaa', 'bbb@ccc', 123];
+        $person->save();
+        return redirect()->route('hello');
+    }
+
+
+    /*map,filter
+    public function index(Request $request)
+    {
+        $msg = 'show people record.';
+        $even = Person::get()->filter(function($item)
+        {
+            return $item->id % 2 == 0;
+        });
+        $map = $even->map(function($item,$key)
+        {
+            return $item->id.':'.$item->name;
+        });
+        $data = [
+            'msg' => $map,
+            'data' => $even,
+        ];
+        return view('hello.index', $data);
+    }
+    */
+
+    /*merge
+    public function index(Request $request)
+    {
+        $msg = 'show people record.';
+        $even = Person::get()->filter(function($item)
+        {
+            return $item->id % 2 == 0;
+        });
+        $even2 = Person::get()->filter(function($item)
+        {
+            return $item->age % 2 == 0;
+        });
+        $result = $even->merge($even2);
+        $data = [
+            'msg' => $msg,
+            'data' => $result,
+        ];
+        return view('hello.index', $data);
+    }
+    */
+
+    /*filter,reject
+    public function index(Request $request)
+    {
+        $msg = 'show people record.';
+        $result = Person::get()->filter(function($person)
+        {
+            return $person->age < 50;
+            //下記でも同様の結果が得られる
+            //return $person->age < 50 AND $person->age > 20;
+
+        });
+        $result2 = Person::get()->filter(function($person)
+        {
+            return $person->age < 20;
+        });
+        $result3 = $result->diff($result2);
+        $data = [
+            'msg' => $msg,
+            'data' => $result3,
+        ];
+        return view('hello.index', $data);
+    }
+    */
+
+    /*filter,reject
+    public function index(Request $request)
+    {
+        $msg = 'show people record.';
+        // $result = Person::get()->filter(function($person)
+        $result = Person::get()->reject(function($person)
+        {
+            return $person->age > 20;
+        });
+        $data = [
+            'msg' => $msg,
+            'data' => $result,
+        ];
+        return view('hello.index', $data);
+    }
+    */
+
+    /* pagenator
+    public function index(Request $request)
+    {
+        $id = $request->query('page');
+        $msg = 'show page: '.$id;
+        $result = Person::paginate(3);
+        $paginator = new MyPaginator($result);
+        $data = [
+            'msg' => $msg,
+            'data' => $result,
+            'paginator' => $paginator,
+        ];
+        return view('hello.index', $data);
+    }
+    */
+
+    /*paginate
+    public function index(Request $request)
+    {
+        $id = $request->query('page');
+        $msg = 'show page: '.$id;
+        $result = DB::table('people')->paginate(3,['*'],'page',$id);
+        $data = [
+            'msg' => $msg,
+            'data' => $result,
+        ];
+        return view('hello.index', $data);
+    }
+    */
+
+    /*pluck
     public function index()
     {
         $name = DB::table('people')->pluck('name');
@@ -24,6 +167,8 @@ class HelloController extends Controller
         ];
         return view('hello.index', $data);
     }
+    */
+
     /* DB where&like
     public function index($id = -1)
     {

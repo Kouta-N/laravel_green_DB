@@ -8,13 +8,22 @@
 </head>
 <body>
     <h1>Hello/Index</h1>
-    <p>{!!$msg!!}</p>
+    <table border="1">
+        @foreach ($data as $item)
+        <tr>
+            <th>{{ $item->id }}</th>
+            <th>{{ $item->name_and_age }}</th>
+        </tr>
+        @endforeach
+    </table>
+    {{-- <p>{!!$msg!!}</p>
     <ol>
         @foreach ($data as $item)
             <li>{{$item->name}} [ {{$item->mail}} {{$item->age}} ]</li>
         @endforeach
-    </ol>
+    </ol> --}}
     <hr>
+
 
     {{-- クエリパラメータ
     <h1>Hello/Index</h1>
